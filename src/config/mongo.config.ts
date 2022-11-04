@@ -12,7 +12,7 @@ export default registerAs('mongodb', () => {
   } = process.env;
   return {
     uri: isDevelopment
-      ? `mongodb://mongo:${MONGO_PORT}/${MONGO_DATABASE}`
+      ? `mongodb://${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DATABASE}`
       : `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}/${MONGO_DATABASE}?retryWrites=true&w=majority`,
   };
 });
