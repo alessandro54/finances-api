@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  nest:
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - ${SERVER_PORT}:3000
+      - 9229:9229
+    command: npm run start:debug
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:latest
+    volumes:
+      - mongodb_data_container:/data/db
+    env_file:
+      - .env
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+    ports:
+      - ${MONGO_PORT}:${MONGO_PORT}
+networks:
+  default:
+volumes:
+  mongodb_data_container:
