@@ -1,7 +1,7 @@
 FROM node:18-alpine AS development
 WORKDIR /usr/src/app
 
-RUN apk update && apk add --no-cache fish curl starship
+RUN apk update && apk add --no-cache fish curl starship gcc libc-dev libressl-dev
 
 COPY package*.json ./
 
