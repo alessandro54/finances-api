@@ -11,3 +11,8 @@ export class NewUserDto extends Base {
 export class UserDto extends Base {
   id: string;
 }
+
+export class UserLoginDto {
+  email: string;
+  password: string;
+}

@@ -1,12 +1,13 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import * as bcrypt from 'bcrypt';
+import * as _ from 'lodash';
 
 @Injectable()
 export class HashMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     const { body } = req;
-    body.password = await hashPassword(body.password);
+    if (!_.isEmpty(body)) body.password = await hashPassword(body.password);
     next();
   }
 }
