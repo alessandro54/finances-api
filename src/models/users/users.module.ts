@@ -8,7 +8,7 @@ import { UsersService } from '../../services/users.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import UsersController from '../../controllers/users.controller';
 import { User, UserSchema } from './user.schema';
-import { HashMiddleware } from '../../middleware/hash.middleware';
+import { HashMiddleware } from '../../middlewares/users/hash.middleware';
 
 @Module({
   imports: [

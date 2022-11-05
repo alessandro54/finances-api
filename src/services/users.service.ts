@@ -6,7 +6,7 @@ import { NewUserDto } from "../models/users/user.dto";
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) { }
 
   async findAll() {
     const findQuery = this.userModel.find().exec();
