@@ -22,7 +22,7 @@ export class UsersService {
         throw new Error('Email already exists');
       return await this.userModel.create(payload);
     } catch (e) {
-      throw new HttpException(e.message, 400);
+      throw new HttpException((<Error>e).message, 400);
     }
   }
 
