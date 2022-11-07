@@ -17,6 +17,6 @@ import { UsersModule } from './models/users/users.module';
       inject: [ConfigService],
     }),
     UsersModule,
-  ]
+  ],
 })
 export class AppModule {}
