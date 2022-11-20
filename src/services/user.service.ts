@@ -2,11 +2,11 @@ import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../models/users/user.schema';
-import { NewUserDto, UserLoginDto, UserDto } from '../models/users/user.dto';
+import { NewUserDto, UserLoginDto } from '../models/users/user.dto';
 import * as bcrypt from 'bcrypt';
 import * as _ from 'lodash';
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async findAll() {
@@ -17,24 +17,24 @@ export class UsersService {
     return { results, count };
   }
 
-  async create(payload: NewUserDto) {
+  async findBy(payload: FindParams): Promise<User | undefined> {
+    return await this.userModel.findOne({ payload }).exec();
+  }
+
+  async create(payload: NewUserDto): Promise<User> {
     if (_.isEmpty(payload)) throw new Error('You must provide a body');
-    if (await this.checkEmailUniqueness(payload.email))
+    if (await this.checkUniqueness(payload.username))
       throw new Error('Email already exists');
     return await this.userModel.create(payload);
   }
 
-  async login(payload: UserLoginDto) {
-    const { email, password } = payload;
-    const user = await this.userModel.findOne({ email }).exec();
-
-    if (!user) throw new Error('User not found');
-
-    if (await bcrypt.compare(password, user.password)) return user;
-    else throw new Error('Invalid password');
+  private async checkUniqueness(attribute: string) {
+    return this.findBy({ username: attribute });
   }
+}
 
-  private async checkEmailUniqueness(email: string) {
-    return this.userModel.findOne({ email }).exec();
-  }
+interface FindParams {
+  Id?: string;
+  email?: string;
+  username?: string;
 }

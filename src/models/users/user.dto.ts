@@ -1,5 +1,6 @@
 class Base {
   email: string;
+  username: string;
   firstName?: string;
   lastName?: string;
 }
@@ -13,6 +14,6 @@ export class UserDto extends Base {
 }
 
 export class UserLoginDto {
-  email: string;
+  username: string;
   password: string;
 }
