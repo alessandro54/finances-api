@@ -2,9 +2,15 @@ import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../models/users/user.schema';
-import { NewUserDto, UserLoginDto } from '../models/users/user.dto';
-import * as bcrypt from 'bcrypt';
+import { NewUserDto } from '../models/users/user.dto';
 import * as _ from 'lodash';
+
+type FindByPermittedParams = {
+  _id?: string;
+  email?: string;
+  username?: string;
+};
+
 @Injectable()
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
@@ -17,24 +23,18 @@ export class UserService {
     return { results, count };
   }
 
-  async findBy(payload: FindParams): Promise<User | undefined> {
-    return await this.userModel.findOne({ payload }).exec();
+  async findBy(payload: FindByPermittedParams): Promise<User | undefined> {
+    return await this.userModel.findOne(payload).exec();
   }
 
   async create(payload: NewUserDto): Promise<User> {
     if (_.isEmpty(payload)) throw new Error('You must provide a body');
-    if (await this.checkUniqueness(payload.username))
-      throw new Error('Email already exists');
+    if (await this.checkUniqueness(payload))
+      throw new Error('Username or email already taken');
     return await this.userModel.create(payload);
   }
 
-  private async checkUniqueness(attribute: string) {
-    return this.findBy({ username: attribute });
+  private async checkUniqueness({ username, email }) {
+    return this.userModel.findOne({ $or: [{ username }, { email }] }).exec();
   }
-}
-
-interface FindParams {
-  Id?: string;
-  email?: string;
-  username?: string;
 }

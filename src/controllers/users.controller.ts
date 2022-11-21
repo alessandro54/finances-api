@@ -2,14 +2,14 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
   Post,
   Request,
-  HttpException,
-  UseGuards,
 } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { NewUserDto } from '../models/users/user.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Public } from '../common/decorators/public.decorator';
+
 @Controller('users')
 export default class UsersController {
   constructor(private readonly userService: UserService) {}
@@ -18,17 +18,23 @@ export default class UsersController {
   async findAll() {
     return this.userService.findAll();
   }
-  @UseGuards(JwtAuthGuard)
+
   @Get('/profile')
-  getProfile(@Request() req) {
-    console.log(req);
-    return req.user;
+  async getProfile(@Request() req) {
+    const createdUser: any = await this.userService.findBy({
+      _id: req.user.id,
+    });
+    const { password, __v, ...user } = createdUser._doc;
+    return user;
   }
 
   @Post()
+  @Public()
   async create(@Body() payload: NewUserDto) {
     try {
-      return await this.userService.create(payload);
+      const createdUser: any = await this.userService.create(payload);
+      const { password, ...user } = createdUser._doc;
+      return user;
     } catch (e) {
       throw new HttpException((<Error>e).message, 400);
     }

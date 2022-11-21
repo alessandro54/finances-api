@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { AuthController } from './controllers/auth.controller';
 import { HomeController } from './controllers/home.controller';
 import configuration from './config/configuration';
+import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -25,5 +26,11 @@ import configuration from './config/configuration';
     AuthModule,
   ],
   controllers: [HomeController, AuthController],
+  providers: [
+    {
+      provide: 'APP_GUARD',
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
 export class AppModule {}

@@ -10,7 +10,7 @@ export class NewUserDto extends Base {
 }
 
 export class UserDto extends Base {
-  id: string;
+  _id?: string;
 }
 
 export class UserLoginDto {

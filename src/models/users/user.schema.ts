@@ -10,6 +10,7 @@ export class User {
 
   @Prop()
   lastName: string;
+
   @Prop({ required: true, index: true })
   username: string;
 
