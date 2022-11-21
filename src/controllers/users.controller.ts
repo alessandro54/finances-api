@@ -1,31 +1,42 @@
-import { Body, Controller, Get, Post, HttpException, HttpCode } from '@nestjs/common';
-import { UsersService } from '../services/users.service';
-import { NewUserDto, UserLoginDto } from '../models/users/user.dto';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  Post,
+  Request,
+} from '@nestjs/common';
+import { UserService } from '../services/user.service';
+import { NewUserDto } from '../models/users/user.dto';
+import { Public } from '../common/decorators/public.decorator';
+
 @Controller('users')
 export default class UsersController {
-  constructor(private readonly userService: UsersService) {}
+  constructor(private readonly userService: UserService) {}
 
   @Get()
   async findAll() {
     return this.userService.findAll();
   }
 
-  @Post()
-  async create(@Body() payload: NewUserDto) {
-    try {
-      return await this.userService.create(payload);
-    } catch (e) {
-      throw new HttpException((<Error>e).message, 400);
-    }
+  @Get('/profile')
+  async getProfile(@Request() req) {
+    const createdUser: any = await this.userService.findBy({
+      _id: req.user.id,
+    });
+    const { password, __v, ...user } = createdUser._doc;
+    return user;
   }
 
-  @Post('login')
-  @HttpCode(200)
-  async login(@Body() payload: UserLoginDto) {
+  @Post()
+  @Public()
+  async create(@Body() payload: NewUserDto) {
     try {
-      return await this.userService.login(payload);
+      const createdUser: any = await this.userService.create(payload);
+      const { password, ...user } = createdUser._doc;
+      return user;
     } catch (e) {
-      throw new HttpException((<Error>e).message, 401);
+      throw new HttpException((<Error>e).message, 400);
     }
   }
 }
